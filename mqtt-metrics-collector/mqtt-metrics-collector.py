@@ -138,7 +138,7 @@ class MetricsCollector:
         # parse the centre_id from the topic
         centre_id = msg.topic.split('/')[3]
 
-        logger.info(f"Received message from centre_id={centre_id}")
+        #logger.info(f"Received message from centre_id={centre_id}")
 
         # update the gauge
         wis2node_active.labels(centre_id).set(1)
