@@ -60,13 +60,13 @@ logger.setLevel(LOGGING_LEVEL)
 INTERRUPT = False
 
 
-wis2node_active = Gauge('wis2node_active',
+wis2node_active = Gauge('wis2node_monitor_active',
                     'wis2node active by centre_id',
                     ["centre_id"])
-metadata_received = Counter('metadata_received',
+metadata_received = Counter('wis2node_monitor_metadata_received',
                             'metadata notifications received by centre_id and generated_by',
                             ["centre_id", "generated_by"])
-synop_messages_received = Counter('synop_messages_received',
+synop_messages_received = Counter('wis2node_monitor_synop_messages_received',
                                 'synop messages received by centre_id and generated_by',
                                 ["centre_id", "generated_by"])
 
