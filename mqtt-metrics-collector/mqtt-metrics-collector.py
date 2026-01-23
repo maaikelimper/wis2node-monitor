@@ -114,14 +114,14 @@ class MetricsCollector:
 
         # topics to subscribe to
         topics = [
-            'origin/a/wis2/+/data/core/weather/surface-based-observations/synop',
-            'origin/a/wis2/+/metadata'	
+            'cache/a/wis2/+/data/core/weather/surface-based-observations/synop',
+            'cache/a/wis2/+/metadata'	
         ]
 
         logger.info(f"on connection to subscribe: {mqtt.connack_string(rc)}")
         for s in topics:
             logger.info(f"subscribing to topic: {s}")
-            client.subscribe(s, qos=1)
+            client.subscribe(s, qos=0)
 
     def sub_mqtt_metrics(self, client, userdata, msg):
         """
