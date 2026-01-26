@@ -66,10 +66,10 @@ wis2node_active = Gauge('wis2node_monitor_active',
 metadata_cache_received = Counter('wis2node_monitor_metadata_received',
                             'metadata notifications received by centre_id and generated_by',
                             ["centre_id", "generated_by"])
-data_cache_messages_received = Counter('wis2node_monitor_data_messages_received',
+data_cache_messages_received = Counter('wis2node_monitor_data_cache_messages_received',
                                 'data messages received by centre_id and generated_by',
                                 ["centre_id", "generated_by"])
-data_origin_messages_received = Counter('wis2node_monitor_data_messages_received',
+data_origin_messages_received = Counter('wis2node_monitor_data_origin_messages_received',
                                 'data messages received by centre_id and generated_by',
                                 ["centre_id", "generated_by"])
 
