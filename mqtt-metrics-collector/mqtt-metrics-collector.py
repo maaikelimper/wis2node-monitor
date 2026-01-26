@@ -180,7 +180,12 @@ class MetricsCollector:
             last_level = topic.split('/')[-1]
             m = json.loads(msg.payload.decode('utf-8'))
             # parse generated_by from message-attribute
-            generated_by = m.get('generated_by', 'none')
+            if 'generated_by' in m:
+                generated_by = m['generated_by']
+            elif 'generated-by' in m:
+                generated_by = m['generated-by']
+            else:
+                generated_by = 'none'
             # update the appropriate counter
             if level4 == 'metadata':
                 metadata_cache_received.labels(centre_id, generated_by).inc(1)
