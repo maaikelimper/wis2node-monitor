@@ -165,6 +165,8 @@ class MetricsCollector:
         :returns: `None`
         """
 
+        import time as _time
+        start_time = _time.time()
         logger.info(f"Start processing {len(self.message_buffer)} messages")
 
         with self.buffer_lock:
@@ -190,6 +192,10 @@ class MetricsCollector:
                 synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
             elif last_level == 'synop' and level0 == 'origin':
                 synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
+
+        end_time = _time.time()
+        duration = end_time - start_time
+        logger.info(f"Finished processing {len(messages_to_process)} messages in {duration:.4f} seconds")
 
 
     def periodic_buffer_processing(self):
