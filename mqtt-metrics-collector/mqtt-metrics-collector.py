@@ -72,6 +72,12 @@ data_cache_messages_received = Counter('wis2node_monitor_data_cache_messages_rec
 data_origin_messages_received = Counter('wis2node_monitor_data_origin_messages_received',
                                 'data messages received by centre_id and generated_by',
                                 ["centre_id", "generated_by"])
+synop_cache_messages_received = Counter('wis2node_monitor_synop_cache_messages_received',
+                                'synop messages received by centre_id and generated_by',
+                                ["centre_id", "generated_by"])
+synop_origin_messages_received = Counter('wis2node_monitor_synop_origin_messages_received',
+                                'synop messages received by centre_id and generated_by',
+                                ["centre_id", "generated_by"])
 
 class MetricsCollector:
     def __init__(self):
@@ -118,7 +124,9 @@ class MetricsCollector:
         # topics to subscribe to
         topics = [
             'cache/a/wis2/+/data/#',
+            'cache/a/wis2/+/data/core/weather/surface-based-observations/synop',
             'origin/a/wis2/+/data/#',
+            'origin/a/wis2/+/data/core/weather/surface-based-observations/synop',
             'cache/a/wis2/+/metadata'	
         ]
 
@@ -167,17 +175,22 @@ class MetricsCollector:
         for topic, msg in messages_to_process:
             centre_id = topic.split('/')[3]
             level4 = topic.split('/')[4]
-            level5 = topic.split('/')[5]
+            level0 = topic.split('/')[0]
+            last_level = topic.split('/')[-1]
             m = json.loads(msg.payload.decode('utf-8'))
             # parse generated_by from message-attribute
             generated_by = m.get('generated_by', 'none')
             # update the appropriate counter
             if level4 == 'metadata':
                 metadata_cache_received.labels(centre_id, generated_by).inc(1)
-            elif level4 == 'data' and level5 == 'cache':
+            elif level4 == 'data' and level0 == 'cache':
                 data_cache_messages_received.labels(centre_id, generated_by).inc(1)
-            elif level4 == 'data' and level5 == 'origin':
+            elif level4 == 'data' and level0 == 'origin':
                 data_origin_messages_received.labels(centre_id, generated_by).inc(1)
+            elif last_level == 'synop' and level0 == 'cache':
+                synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
+            elif last_level == 'synop' and level0 == 'origin':
+                synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
 
 
     def periodic_buffer_processing(self):
