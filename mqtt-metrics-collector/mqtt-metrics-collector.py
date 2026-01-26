@@ -191,19 +191,17 @@ class MetricsCollector:
             elif last_level == 'synop' and level0 == 'origin':
                 synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
 
-        logger.info(f"Finished processing {len(self.message_buffer)} messages")
-
 
     def periodic_buffer_processing(self):
         """
-        function to process buffered messages every second
+        function to process buffered messages every 5 seconds
 
         :returns: `None`
         """
 
         while True:
             self.process_buffered_messages()
-            time.sleep(1)
+            time.sleep(5)
 
     def gather_mqtt_metrics(self):
         """
