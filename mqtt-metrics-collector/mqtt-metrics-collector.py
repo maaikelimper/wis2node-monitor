@@ -184,14 +184,15 @@ class MetricsCollector:
             # update the appropriate counter
             if level4 == 'metadata':
                 metadata_cache_received.labels(centre_id, generated_by).inc(1)
-            elif level4 == 'data' and level0 == 'cache':
-                data_cache_messages_received.labels(centre_id, generated_by).inc(1)
-            elif level4 == 'data' and level0 == 'origin':
-                data_origin_messages_received.labels(centre_id, generated_by).inc(1)
-            elif last_level == 'synop' and level0 == 'cache':
-                synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
-            elif last_level == 'synop' and level0 == 'origin':
-                synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
+            elif level4 == 'data':
+                if last_level == 'synop' and level0 == 'cache':
+                    synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
+                elif last_level == 'synop' and level0 == 'origin':
+                    synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
+                if level0 == 'cache':
+                    data_cache_messages_received.labels(centre_id, generated_by).inc(1)
+                elif level0 == 'origin':
+                    data_origin_messages_received.labels(centre_id, generated_by).inc(1)
 
         end_time = _time.time()
         duration = end_time - start_time
