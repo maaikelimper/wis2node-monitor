@@ -150,16 +150,13 @@ class MetricsCollector:
         # parse the centre_id from the topic
         centre_id = msg.topic.split('/')[3]
 
-        #logger.info(f"Received message from centre_id={centre_id}")
-
         # update the gauge
         wis2node_active.labels(centre_id).set(1)
 
-        # add received message to buffer
+        # add received message to buffer (do not process here)
         with self.buffer_lock:
             self.message_buffer.append((msg.topic, msg))
-            if len(self.message_buffer) >= 100:
-                self.process_buffered_messages()
+        # Do not call process_buffered_messages here to avoid deadlock/blocking
 
     def process_buffered_messages(self):
         """
@@ -167,6 +164,8 @@ class MetricsCollector:
 
         :returns: `None`
         """
+
+        logger.info(f"Start processing {len(self.message_buffer)} messages")
 
         with self.buffer_lock:
             messages_to_process = self.message_buffer
@@ -191,6 +190,8 @@ class MetricsCollector:
                 synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
             elif last_level == 'synop' and level0 == 'origin':
                 synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
+
+        logger.info(f"Finished processing {len(self.message_buffer)} messages")
 
 
     def periodic_buffer_processing(self):
