@@ -124,9 +124,7 @@ class MetricsCollector:
         # topics to subscribe to
         topics = [
             'cache/a/wis2/+/data/#',
-            'cache/a/wis2/+/data/core/weather/surface-based-observations/synop',
             'origin/a/wis2/+/data/#',
-            'origin/a/wis2/+/data/core/weather/surface-based-observations/synop',
             'cache/a/wis2/+/metadata'	
         ]
 
