@@ -192,6 +192,16 @@ class MetricsCollector:
             elif level4 == 'data':
                 if last_level == 'synop' and level0 == 'cache':
                     synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
+                    if centre_id == 'br-inmet':
+                        if 'properties' in m and 'wigos_station_identifier' in m['properties']:
+                            wigos_id = m['properties']['wigos_station_identifier']
+                            if wigos_id == '0-76-0-3200102000000478':
+                                global_cache = m['properties'].get('global-cache', 'N/A')
+                                canonical_url = 'N/A'
+                                for link in m.get('links', []):
+                                    if link.get('rel') == 'canonical':
+                                        canonical_url = link.get('href', 'N/A')
+                                logger.info(f"global-cache={global_cache} provided canonical_url={canonical_url}") # noqa
                 elif last_level == 'synop' and level0 == 'origin':
                     synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
                 if level0 == 'cache':
