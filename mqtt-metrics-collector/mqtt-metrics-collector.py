@@ -123,9 +123,7 @@ class MetricsCollector:
 
         # topics to subscribe to
         topics = [
-            'cache/a/wis2/+/data/#',
-            'origin/a/wis2/+/data/#',
-            'cache/a/wis2/+/metadata'	
+            'monitor/a/wis2/#'	
         ]
 
         logger.info(f"on connection to subscribe: {mqtt.connack_string(rc)}")
@@ -155,6 +153,36 @@ class MetricsCollector:
         with self.buffer_lock:
             self.message_buffer.append((msg.topic, msg))
         # Do not call process_buffered_messages here to avoid deadlock/blocking
+
+    def process_buffered_monitor_messages(self):
+        """
+        function to process buffered messages
+
+        :returns: `None`
+        """
+
+        import time as _time
+        start_time = _time.time()
+        logger.info(f"Start processing {len(self.message_buffer)} messages")
+
+        with self.buffer_lock:
+            messages_to_process = self.message_buffer
+            self.message_buffer = []
+
+        for topic, msg in messages_to_process:
+            centre_id = topic.split('/')[3]
+            m = json.loads(msg.payload.decode('utf-8'))
+            if 'source' in m and m['source'] == 'io-wis2dev-global-discovery-catalogue':
+                # write a file to /tmp for monitoring
+                filename = f'/tmp/gdc_monitor_{centre_id}_{m['id']}.txt'
+                with open(filename, 'w') as f:
+                    f.write(msg.payload.decode('utf-8'))
+                logger.info(f"Wrote GDC monitor file: {filename}")
+        
+        end_time = _time.time()
+        duration = end_time - start_time
+        logger.info(f"Finished processing {len(messages_to_process)} messages in {duration:.4f} seconds")
+
 
     def process_buffered_messages(self):
         """
@@ -227,7 +255,7 @@ class MetricsCollector:
         """
 
         while True:
-            self.process_buffered_messages()
+            self.process_buffered_monitor_messages()
             time.sleep(5)
 
     def gather_mqtt_metrics(self):

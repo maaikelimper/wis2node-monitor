@@ -18,9 +18,9 @@ services:
       - BROKER_PASSWORD=${BROKER_PASSWORD}
       - BROKER_TRANSPORT=${BROKER_TRANSPORT}
       - LOGGING_LEVEL=${LOGGING_LEVEL}
+    volumes:
+      - ./gdc-monitor-messages/:/tmp/
 
-
-  
   prometheus:
     image: prom/prometheus:latest
     container_name: wis2node-monitor-prometheus
