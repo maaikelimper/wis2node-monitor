@@ -170,9 +170,9 @@ class MetricsCollector:
             self.message_buffer = []
 
         for topic, msg in messages_to_process:
-            logger.info(f"topic={topic}")
             centre_id = topic.split('/')[3]
             m = json.loads(msg.payload.decode('utf-8'))
+            logger.info(f"topic={topic}, source={m.get('source', 'N/A')}")
             if 'source' in m and m['source'] == 'io-wis2dev-global-discovery-catalogue':
                 # write a file to /tmp for monitoring
                 filename = f'/tmp/gdc_monitor_{centre_id}_{m['id']}.txt'
