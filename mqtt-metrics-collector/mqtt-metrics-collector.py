@@ -170,6 +170,7 @@ class MetricsCollector:
             self.message_buffer = []
 
         for topic, msg in messages_to_process:
+            logger.info(f"topic={topic}")
             centre_id = topic.split('/')[3]
             m = json.loads(msg.payload.decode('utf-8'))
             if 'source' in m and m['source'] == 'io-wis2dev-global-discovery-catalogue':
