@@ -59,25 +59,17 @@ logger.setLevel(LOGGING_LEVEL)
 
 INTERRUPT = False
 
+BROKER_HOST = os.environ.get('BROKER_HOST', '')
 
 wis2node_active = Gauge('wis2node_monitor_active',
                     'wis2node active by centre_id',
                     ["centre_id"])
-metadata_cache_received = Counter('wis2node_monitor_metadata_received',
-                            'metadata notifications received by centre_id and generated_by',
-                            ["centre_id", "generated_by"])
-data_cache_messages_received = Counter('wis2node_monitor_data_cache_messages_received',
-                                'data messages received by centre_id and generated_by',
-                                ["centre_id", "generated_by"])
 data_origin_messages_received = Counter('wis2node_monitor_data_origin_messages_received',
                                 'data messages received by centre_id and generated_by',
-                                ["centre_id", "generated_by"])
-synop_cache_messages_received = Counter('wis2node_monitor_synop_cache_messages_received',
-                                'synop messages received by centre_id and generated_by',
-                                ["centre_id", "generated_by"])
+                                ["broker_host","centre_id", "generated_by"])
 synop_origin_messages_received = Counter('wis2node_monitor_synop_origin_messages_received',
                                 'synop messages received by centre_id and generated_by',
-                                ["centre_id", "generated_by"])
+                                ["broker_host","centre_id", "generated_by"])
 
 class MetricsCollector:
     def __init__(self):
@@ -123,9 +115,8 @@ class MetricsCollector:
 
         # topics to subscribe to
         topics = [
-            'cache/a/wis2/+/data/#',
             'origin/a/wis2/+/data/#',
-            'cache/a/wis2/+/metadata'	
+            'origin/a/wis2/+/metadata/#'
         ]
 
         logger.info(f"on connection to subscribe: {mqtt.connack_string(rc)}")
@@ -185,34 +176,11 @@ class MetricsCollector:
             else:
                 generated_by = 'none'
             # update the appropriate counter
-            if level4 == 'metadata':
-                metadata_cache_received.labels(centre_id, generated_by).inc(1)
-            elif level4 == 'data':
-                if last_level == 'synop' and level0 == 'cache':
-                    synop_cache_messages_received.labels(centre_id, generated_by).inc(1)
-                    if centre_id in ['br-inmet', 'sn-anacim']:
-                        if 'properties' in m and 'wigos_station_identifier' in m['properties']:
-                            wigos_id = m['properties']['wigos_station_identifier']
-                            if wigos_id == '0-76-0-3200102000000478':
-                                global_cache = m['properties'].get('global-cache', 'N/A')
-                                canonical_url = 'N/A'
-                                for link in m.get('links', []):
-                                    if link.get('rel') == 'canonical':
-                                        canonical_url = link.get('href', 'N/A')
-                                logger.info(f"global-cache={global_cache} provided canonical_url={canonical_url}") # noqa
-                            elif wigos_id == '0-20000-0-61695':
-                                global_cache = m['properties'].get('global-cache', 'N/A')
-                                canonical_url = 'N/A'
-                                for link in m.get('links', []):
-                                    if link.get('rel') == 'canonical':
-                                        canonical_url = link.get('href', 'N/A')
-                                logger.info(f"global-cache={global_cache} provided canonical_url={canonical_url}") # noqa
-                elif last_level == 'synop' and level0 == 'origin':
-                    synop_origin_messages_received.labels(centre_id, generated_by).inc(1)
-                if level0 == 'cache':
-                    data_cache_messages_received.labels(centre_id, generated_by).inc(1)
+            if level4 == 'data':
+                if last_level == 'synop' and level0 == 'origin':
+                    synop_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
                 elif level0 == 'origin':
-                    data_origin_messages_received.labels(centre_id, generated_by).inc(1)
+                    data_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
 
         end_time = _time.time()
         duration = end_time - start_time
@@ -237,7 +205,7 @@ class MetricsCollector:
         :returns: `None`
         """
 
-        broker_host = os.environ.get('BROKER_HOST', '')
+        broker_host = BROKER_HOST
         broker_username = os.environ.get('BROKER_USERNAME', '')
         broker_password = os.environ.get('BROKER_PASSWORD', '')
         broker_port = int(os.environ.get('BROKER_PORT', '443'))

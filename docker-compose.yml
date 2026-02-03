@@ -4,7 +4,7 @@
 
 services:
   
-  wis2node-monitor:
+  wis2node-monitor-china:
     build: 
       context: ./mqtt-metrics-collector
     container_name: wis2node-monitor-mqtt-metrics-collector
@@ -12,22 +12,84 @@ services:
     ports:
       - 8111:8111
     environment:
-      - BROKER_HOST=${BROKER_HOST}
-      - BROKER_PORT=${BROKER_PORT}
-      - BROKER_USERNAME=${BROKER_USERNAME}
-      - BROKER_PASSWORD=${BROKER_PASSWORD}
-      - BROKER_TRANSPORT=${BROKER_TRANSPORT}
-      - LOGGING_LEVEL=${LOGGING_LEVEL}
-
-
-  
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: wis2node-monitor-prometheus
+      - BROKER_HOST=gb.wis.cma.cn
+      - BROKER_PORT=88883
+      - BROKER_USERNAME=everyone
+      - BROKER_PASSWORD=everyone
+      - BROKER_TRANSPORT=tcp
+      - LOGGING_LEVEL=INFO
+  wis2node-monitor-brazil:
+    build: 
+      context: ./mqtt-metrics-collector
+    container_name: wis2node-monitor-mqtt-metrics-collector
     restart: unless-stopped
+    ports:
+      - 8111:8111
+    environment:
+      - BROKER_HOST=globalbroker.inmet.gov.br
+      - BROKER_PORT=443
+      - BROKER_USERNAME=everyone
+      - BROKER_PASSWORD=everyone
+      - BROKER_TRANSPORT=websockets
+      - LOGGING_LEVEL=INFO
+
+  wis2node-monitor-france:
+    build: 
+      context: ./mqtt-metrics-collector
+    container_name: wis2node-monitor-mqtt-metrics-collector
+    restart: unless-stopped
+    ports:
+      - 8111:8111
+    environment:
+      - BROKER_HOST=globalbroker.meteo.fr
+      - BROKER_PORT=443
+      - BROKER_USERNAME=everyone
+      - BROKER_PASSWORD=everyone
+      - BROKER_TRANSPORT=websockets
+      - LOGGING_LEVEL=INFO
+
+  wis2node-monitor-usa:
+    build: 
+      context: ./mqtt-metrics-collector
+    container_name: wis2node-monitor-mqtt-metrics-collector
+    restart: unless-stopped
+    ports:
+      - 8111:8111
+    environment:
+      - BROKER_HOST=wis2broker.globaldata.nws.noaa.gov
+      - BROKER_PORT=8883
+      - BROKER_USERNAME=everyone
+      - BROKER_PASSWORD=everyone
+      - BROKER_TRANSPORT=tcp
+      - LOGGING_LEVEL=INFO
+
+  prometheus:
+    <<: *logging
+    image: WIS2BOX-RELEASE
+    container_name: prometheus
+    restart: always
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.retention.time=5d'
+      - '--storage.tsdb.retention.time=10d'
       - '--log.level=warn'
+  
+  grafana:
+    image: grafana/grafana:12.3
+    container_name: wis2node-monitor-grafana
+    restart: unless-stopped
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    depends_on:
+      - prometheus
+
+volumes:
+  prometheus-data:

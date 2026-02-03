@@ -1,2 +1,7 @@
 # wis2node-monitor
-prometheus client running a mqtt-client-loop subscriber to WIS2 Global Broker to monitor WIS2 Node status
+
+docker-compose setup to monitor the WIS2 Node with Prometheus and Grafana. The setup includes a custom MQTT metrics collector that subscribes to specific MQTT topics and exposes the collected metrics in a format that Prometheus can scrape. 
+
+the docker-compose stack includes mqtt-metrics-collectors for all 4 WIS2 Global Brokers.
+
+Work in progress !
