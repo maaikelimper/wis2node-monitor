@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
     environment:
       - BROKER_HOST=gb.wis.cma.cn
-      - BROKER_PORT=88883
+      - BROKER_PORT=8883
       - BROKER_USERNAME=everyone
       - BROKER_PASSWORD=everyone
       - BROKER_TRANSPORT=tcp
