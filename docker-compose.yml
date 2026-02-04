@@ -8,8 +8,6 @@ services:
     build: 
       context: ./mqtt-metrics-collector
     restart: unless-stopped
-    ports:
-      - 8111:8111
     environment:
       - BROKER_HOST=gb.wis.cma.cn
       - BROKER_PORT=88883
@@ -21,8 +19,6 @@ services:
     build: 
       context: ./mqtt-metrics-collector
     restart: unless-stopped
-    ports:
-      - 8111:8111
     environment:
       - BROKER_HOST=globalbroker.inmet.gov.br
       - BROKER_PORT=443
@@ -35,8 +31,6 @@ services:
     build: 
       context: ./mqtt-metrics-collector
     restart: unless-stopped
-    ports:
-      - 8111:8111
     environment:
       - BROKER_HOST=globalbroker.meteo.fr
       - BROKER_PORT=443
@@ -49,8 +43,6 @@ services:
     build: 
       context: ./mqtt-metrics-collector
     restart: unless-stopped
-    ports:
-      - 8111:8111
     environment:
       - BROKER_HOST=wis2broker.globaldata.nws.noaa.gov
       - BROKER_PORT=8883
