@@ -64,8 +64,7 @@ services:
       - LOGGING_LEVEL=INFO
 
   prometheus:
-    <<: *logging
-    image: WIS2BOX-RELEASE
+    image: prom/prometheus:v2.37.0
     container_name: prometheus
     restart: always
     volumes:
