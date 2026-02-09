@@ -179,7 +179,7 @@ class MetricsCollector:
             if level4 == 'data':
                 if last_level == 'synop' and level0 == 'origin':
                     synop_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
-                elif level0 == 'origin':
+                if level0 == 'origin':
                     data_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
 
         end_time = _time.time()
