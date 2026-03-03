@@ -74,14 +74,14 @@ synop_origin_messages_received = Counter('wis2node_monitor_synop_origin_messages
 satellite_origin_messages_received = Counter('wis2node_monitor_satellite_origin_messages_received',
                                 'satellite messages received by centre_id',
                                 ["broker_host","centre_id"])
-satellite_origin_volume_received = Counter('wis2node_monitor_satellite_origin_messages_received',
+satellite_origin_volume_received = Counter('wis2node_monitor_satellite_origin_volume_received',
                                 'satellite data volume received by centre_id',
                                 ["broker_host","centre_id"])
 
 forecast_origin_messages_received = Counter('wis2node_monitor_forecast_origin_messages_received',
                                 'forecast messages received by centre_id, metadata_id',
                                 ["broker_host","centre_id","metadata_id","topic_level10"])
-forecast_origin_volume_received = Counter('wis2node_monitor_forecast_origin_messages_received',
+forecast_origin_volume_received = Counter('wis2node_monitor_forecast_origin_volume_received',
                                 'forecast data volume received by centre_id, metadata_id',
                                 ["broker_host","centre_id","metadata_id","topic_level10"])
 
