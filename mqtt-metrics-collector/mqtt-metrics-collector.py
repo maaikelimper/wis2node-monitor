@@ -71,6 +71,21 @@ synop_origin_messages_received = Counter('wis2node_monitor_synop_origin_messages
                                 'synop messages received by centre_id and generated_by',
                                 ["broker_host","centre_id", "generated_by"])
 
+satellite_origin_messages_received = Counter('wis2node_monitor_satellite_origin_messages_received',
+                                'satellite messages received by centre_id',
+                                ["broker_host","centre_id"])
+satellite_origin_volume_received = Counter('wis2node_monitor_satellite_origin_messages_received',
+                                'satellite data volume received by centre_id',
+                                ["broker_host","centre_id"])
+
+forecast_origin_messages_received = Counter('wis2node_monitor_forecast_origin_messages_received',
+                                'forecast messages received by centre_id, metadata_id',
+                                ["broker_host","centre_id","metadata_id","topic_level10"])
+forecast_origin_volume_received = Counter('wis2node_monitor_forecast_origin_messages_received',
+                                'forecast data volume received by centre_id, metadata_id',
+                                ["broker_host","centre_id","metadata_id","topic_level10"])
+
+
 class MetricsCollector:
     def __init__(self):
         self.message_buffer = []
@@ -115,8 +130,9 @@ class MetricsCollector:
 
         # topics to subscribe to
         topics = [
-            'origin/a/wis2/+/data/#',
-            'origin/a/wis2/+/metadata/#'
+            'origin/a/wis2/+/data/+/weather/prediction/forecast/medium-range/#',
+            'origin/a/wis2/+/data/+/weather/space-based-observations/#',
+            'origin/a/wis2/+/data/+/weather/surface-based-observations/synop'
         ]
 
         logger.info(f"on connection to subscribe: {mqtt.connack_string(rc)}")
@@ -166,6 +182,8 @@ class MetricsCollector:
             centre_id = topic.split('/')[3]
             level4 = topic.split('/')[4]
             level0 = topic.split('/')[0]
+            level7 = topic.split('/')[7] if len(topic.split('/')) > 7 else 'none'
+            level10 = topic.split('/')[10] if len(topic.split('/')) > 10 else 'none'
             last_level = topic.split('/')[-1]
             m = json.loads(msg.payload.decode('utf-8'))
             # parse generated_by from message-attribute
@@ -175,12 +193,27 @@ class MetricsCollector:
                 generated_by = m['generated-by']
             else:
                 generated_by = 'none'
+            links = m.get('links', [])
+            # get length of the first link  with rel='canonical' if it exists, otherwise set to 0
+            canonical_link_length = 0
+            for link in links:
+                if link.get('rel') == 'canonical' and 'href' in link:
+                    canonical_link_length = len(link['href'])
+                    break
+            
             # update the appropriate counter
             if level4 == 'data':
                 if last_level == 'synop' and level0 == 'origin':
                     synop_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
                 if level0 == 'origin':
                     data_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
+                if level7 == 'space-based-observations' and level0 == 'origin':
+                    satellite_origin_messages_received.labels(BROKER_HOST, centre_id).inc(1)
+                    satellite_origin_volume_received.labels(BROKER_HOST, centre_id).inc(canonical_link_length)
+                if level7 == 'prediction' and level0 == 'origin':
+                    metadata_id = topic.split('/')[6] if len(topic.split('/')) > 6 else 'none'
+                    forecast_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, level10).inc(1)
+                    forecast_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, level10).inc(canonical_link_length)
 
         end_time = _time.time()
         duration = end_time - start_time
