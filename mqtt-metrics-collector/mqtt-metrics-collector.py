@@ -198,7 +198,7 @@ class MetricsCollector:
             canonical_link_length = 0
             for link in links:
                 if link.get('rel') == 'canonical' and 'href' in link:
-                    canonical_link_length = len(link['href'])
+                    canonical_link_length = link['length'] if 'length' in link else 0
                     break
             
             # update the appropriate counter
@@ -208,12 +208,14 @@ class MetricsCollector:
                 if level0 == 'origin':
                     data_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
                 if level7 == 'space-based-observations' and level0 == 'origin':
-                    satellite_origin_messages_received.labels(BROKER_HOST, centre_id).inc(1)
-                    satellite_origin_volume_received.labels(BROKER_HOST, centre_id).inc(canonical_link_length)
+                    if canonical_link_length > 0:
+                        satellite_origin_messages_received.labels(BROKER_HOST, centre_id).inc(1)
+                        satellite_origin_volume_received.labels(BROKER_HOST, centre_id).inc(canonical_link_length)
                 if level7 == 'prediction' and level0 == 'origin':
-                    metadata_id = topic.split('/')[6] if len(topic.split('/')) > 6 else 'none'
-                    forecast_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, level10).inc(1)
-                    forecast_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, level10).inc(canonical_link_length)
+                    metadata_id = m.get('properties', {}).get('metadata_id', 'none')
+                    if canonical_link_length > 0:
+                        forecast_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, level10).inc(1)
+                        forecast_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, level10).inc(canonical_link_length)
 
         end_time = _time.time()
         duration = end_time - start_time
