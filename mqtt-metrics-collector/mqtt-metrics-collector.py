@@ -63,11 +63,11 @@ BROKER_HOST = os.environ.get('BROKER_HOST', '')
 
 origin_messages_received = Counter('wis2node_monitor_origin_messages_received',
                                 'breakdown by number of messages',
-                                ["broker_host","centre_id","metadata_id","data_policy","discipline","generated_by"])
+                                ["broker_host","centre_id","metadata_id","data_policy","discipline","subtopics","generated_by"])
 
 origin_volume_received = Counter('wis2node_monitor_origin_volume_received',
                                 'breakdown by volume received',
-                                ["broker_host","centre_id","metadata_id","data_policy","discipline","generated_by"])
+                                ["broker_host","centre_id","metadata_id","data_policy","discipline","subtopics","generated_by"])
 
 satellite_origin_messages_received = Counter('wis2node_monitor_satellite_origin_messages_received',
                                 'satellite messages received by centre_id',
@@ -82,13 +82,6 @@ forecast_origin_messages_received = Counter('wis2node_monitor_forecast_origin_me
 forecast_origin_volume_received = Counter('wis2node_monitor_forecast_origin_volume_received',
                                 'forecast data volume received by centre_id',
                                 ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2","subtopic3","subtopic4"])
-
-weather_other_origin_messages_received = Counter('wis2node_monitor_weather_other_origin_messages_received',
-                                'weather other messages received by centre_id',
-                                ["broker_host","centre_id","metadata_id","data_policy","subtopics"])
-weather_other_origin_volume_received = Counter('wis2node_monitor_weather_other_origin_volume_received',
-                                'weather other data volume received by centre_id',
-                                ["broker_host","centre_id","metadata_id","data_policy","subtopics"])
 
 
 class MetricsCollector:
@@ -188,8 +181,10 @@ class MetricsCollector:
             # update the appropriate counter
             if level4 == 'data':
                 metadata_id = m.get('properties', {}).get('metadata_id', 'none')
-                origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, generated_by).inc(1)
-                origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, generated_by).inc(canonical_link_length)
+                # all topics below discipline are considered subtopics
+                subtopics = topic.split(f'{discipline}/')[1] if discipline != 'none' else 'none'
+                origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(1)
+                origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(canonical_link_length)
                 if level7 == 'space-based-observations' and level0 == 'origin':
                     subtopic1 = topic.split('/')[8] if len(topic.split('/')) > 8 else 'none'
                     subtopic2 = topic.split('/')[9] if len(topic.split('/')) > 9 else 'none'
@@ -204,11 +199,6 @@ class MetricsCollector:
                     if canonical_link_length > 0:
                         forecast_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2, subtopic3, subtopic4).inc(1)
                         forecast_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2, subtopic3, subtopic4).inc(canonical_link_length)
-                if discipline == 'weather' and level7 not in ['space-based-observations', 'prediction'] and level0 == 'origin':
-                    subtopics = '/'.join(topic.split('/')[8:]) if len(topic.split('/')) > 8 else 'none'
-                    if canonical_link_length > 0:
-                        weather_other_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopics).inc(1)
-                        weather_other_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopics).inc(canonical_link_length)
 
         end_time = _time.time()
         duration = end_time - start_time
