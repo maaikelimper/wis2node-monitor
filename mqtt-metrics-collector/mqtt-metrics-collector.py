@@ -171,10 +171,13 @@ class MetricsCollector:
             else:
                 generated_by = 'none'
             links = m.get('links', [])
-            # get length of the first link  with rel='canonical' if it exists, otherwise set to 0
+            # get length of the first link  with rel='canonical' or rel='update' if it exists, otherwise set to 0
             canonical_link_length = 0
             for link in links:
                 if link.get('rel') == 'canonical' and 'href' in link:
+                    canonical_link_length = link['length'] if 'length' in link else 0
+                    break
+                elif link.get('rel') == 'update' and 'href' in link:
                     canonical_link_length = link['length'] if 'length' in link else 0
                     break
             

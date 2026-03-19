@@ -68,6 +68,7 @@ services:
     volumes:
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
     ports:
       - 3000:3000
     environment:
@@ -76,5 +77,30 @@ services:
     depends_on:
       - prometheus
 
+  traefik:
+    image: traefik:v2.11
+    restart: unless-stopped
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.file.filename=/etc/traefik/traefik_dynamic.yml
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.tlschallenge=true
+      - --certificatesresolvers.myresolver.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - WIS2NODE_MONITOR_URL=${WIS2NODE_MONITOR_URL}
+    volumes:
+      - ./traefik/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yml:ro
+      - traefik-letsencrypt:/letsencrypt
+    depends_on:
+      - grafana
+
 volumes:
   prometheus-data:
+  traefik-letsencrypt:
+  grafana-data:
