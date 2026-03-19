@@ -59,7 +59,7 @@ services:
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.retention.time=10d'
+      - '--storage.tsdb.retention.time=365d'
       - '--log.level=warn'
   
   grafana:
@@ -76,29 +76,28 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
     depends_on:
       - prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`${WIS2NODE_MONITOR_HOST}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
   traefik:
     image: traefik:v2.11
     restart: unless-stopped
     command:
       - --api.insecure=true
-      - --providers.docker=true
-      - --providers.file.filename=/etc/traefik/traefik_dynamic.yml
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --certificatesresolvers.myresolver.acme.tlschallenge=true
-      - --certificatesresolvers.myresolver.acme.email=${TRAEFIK_ACME_EMAIL}
+      - --providers.docker=true
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
     ports:
       - 80:80
       - 443:443
-    environment:
-      - WIS2NODE_MONITOR_URL=${WIS2NODE_MONITOR_URL}
     volumes:
-      - ./traefik/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yml:ro
       - traefik-letsencrypt:/letsencrypt
-    depends_on:
-      - grafana
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
 volumes:
   prometheus-data:
