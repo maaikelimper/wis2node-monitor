@@ -62,7 +62,7 @@
         ]
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 8,
         "x": 0,
         "y": 0
@@ -94,7 +94,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "count(sum by(centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\", subtopics=~\".*surface-based-observations.*\"}[24h])))",
+          "expr": "count(sum by(centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\", subtopics=~\".*surface-based-observations.*\"}[24h])))",
           "format": "table",
           "instant": true,
           "interval": "24h",
@@ -103,7 +103,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total number of active WIS2 Nodes sharing surface based observations",
+      "title": "Number of active WIS2 Nodes sharing surface based observations",
       "transformations": [
         {
           "id": "organize",
@@ -152,7 +152,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 8,
         "x": 8,
         "y": 0
@@ -184,7 +184,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "count(sum by(centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\", subtopics=~\".*space-based-observations.*\"}[24h])))",
+          "expr": "count(sum by(centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\", subtopics=~\".*space-based-observations.*\"}[24h])))",
           "format": "table",
           "instant": true,
           "interval": "24h",
@@ -193,7 +193,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total number of active WIS2 Nodes sharing space based observations",
+      "title": "Number of active WIS2 Nodes sharing space based observations",
       "transformations": [
         {
           "id": "organize",
@@ -242,7 +242,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 8,
         "x": 16,
         "y": 0
@@ -274,7 +274,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "count(sum by(centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\", subtopics=~\".*prediction.*\"}[24h])))",
+          "expr": "count(sum by(centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\", subtopics=~\".*prediction.*\"}[24h])))",
           "format": "table",
           "instant": true,
           "interval": "24h",
@@ -283,7 +283,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total number of active WIS2 Nodes sharing forecast products",
+      "title": "Number of active WIS2 Nodes sharing forecast products",
       "transformations": [
         {
           "id": "organize",
@@ -346,6 +346,7 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -366,7 +367,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 5
+        "y": 4
       },
       "id": 5,
       "options": {
@@ -394,7 +395,7 @@
             "uid": "PAFEC6320FFCC69D1"
           },
           "editorMode": "builder",
-          "expr": "count by(discipline) (sum by(discipline, centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\"}[24h])))",
+          "expr": "count by(discipline) (sum by(discipline, centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\"}[24h])))",
           "instant": false,
           "interval": "4h",
           "legendFormat": "__auto",
@@ -452,6 +453,7 @@
             }
           },
           "mappings": [],
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -472,7 +474,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 5
+        "y": 4
       },
       "id": 2,
       "options": {
@@ -500,7 +502,7 @@
             "uid": "PAFEC6320FFCC69D1"
           },
           "editorMode": "builder",
-          "expr": "count by(data_policy) (sum by(data_policy, centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\"}[24h])))",
+          "expr": "count by(data_policy) (sum by(data_policy, centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\"}[24h])))",
           "instant": false,
           "interval": "4h",
           "legendFormat": "__auto",
@@ -516,7 +518,7 @@
         "type": "prometheus",
         "uid": "PAFEC6320FFCC69D1"
       },
-      "description": "Count of unique centre-id with at least one notification in 24-hours, containing \"surface-based-observations\" in the subtopics",
+      "description": "Count of unique centre-id with at least one notification in 24-hours by topic used",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -568,9 +570,9 @@
       },
       "gridPos": {
         "h": 12,
-        "w": 8,
+        "w": 24,
         "x": 0,
-        "y": 13
+        "y": 12
       },
       "id": 1,
       "options": {
@@ -592,7 +594,7 @@
           },
           "editorMode": "builder",
           "exemplar": false,
-          "expr": "count by(subtopics) (sum by(centre_id, subtopics) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\", subtopics=~\".*surface-based-observations.*\"}[24h])))",
+          "expr": "count by(discipline, data_policy, subtopics) (sum by(centre_id, subtopics, data_policy, discipline) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\"}[24h])))",
           "format": "table",
           "instant": true,
           "interval": "24h",
@@ -601,7 +603,7 @@
           "refId": "A"
         }
       ],
-      "title": "Total number of active WIS2 Nodes sharing surface based observations",
+      "title": "Number of Active WIS2 Nodes by topic used",
       "transformations": [
         {
           "id": "organize",
@@ -610,194 +612,19 @@
               "Time": true
             },
             "includeByName": {},
-            "indexByName": {},
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PAFEC6320FFCC69D1"
-      },
-      "description": "Count of unique centre-id with at least one notification in 24-hours, containing \"space-based-observations\" in the subtopics",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+            "indexByName": {
+              "Time": 0,
+              "Value": 4,
+              "data_policy": 2,
+              "discipline": 1,
+              "subtopics": 3
             },
-            "footer": {
-              "reducers": []
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-orange",
-                "value": 0
-              },
-              {
-                "color": "dark-blue",
-                "value": 5
-              },
-              {
-                "color": "green",
-                "value": 50
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 7,
-        "x": 8,
-        "y": 13
-      },
-      "id": 6,
-      "options": {
-        "cellHeight": "sm",
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PAFEC6320FFCC69D1"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by(subtopics) (sum by(centre_id, subtopics) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\", subtopics=~\".*space-based-observations.*\"}[24h])))",
-          "format": "table",
-          "instant": true,
-          "interval": "24h",
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Total number of active WIS2 Nodes sharing space based observations",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "includeByName": {},
-            "indexByName": {},
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PAFEC6320FFCC69D1"
-      },
-      "description": "Count of unique centre-id with at least one notification in 24-hours, containing \"prediction\" in the subtopics",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "footer": {
-              "reducers": []
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-orange",
-                "value": 0
-              },
-              {
-                "color": "dark-blue",
-                "value": 5
-              },
-              {
-                "color": "green",
-                "value": 50
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 9,
-        "x": 15,
-        "y": 13
-      },
-      "id": 7,
-      "options": {
-        "cellHeight": "sm",
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value"
-          }
-        ]
-      },
-      "pluginVersion": "12.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PAFEC6320FFCC69D1"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by(subtopics) (sum by(centre_id, subtopics) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\", subtopics=~\".*prediction.*\"}[24h])))",
-          "format": "table",
-          "instant": true,
-          "interval": "24h",
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "title": "Total number of active WIS2 Nodes sharing forecast products",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "includeByName": {},
-            "indexByName": {},
-            "renameByName": {}
+            "renameByName": {
+              "Value": "Number of Active WIS2 Node",
+              "data_policy": "Data-policy",
+              "discipline": "Discipline ",
+              "subtopics": "Sub-topic"
+            }
           }
         }
       ],
@@ -812,42 +639,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisGridShow": true,
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "bars",
-            "fillOpacity": 100,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "normal"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
+            "mode": "thresholds"
           },
           "mappings": [],
           "thresholds": {
@@ -867,28 +659,28 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 4,
+        "w": 24,
         "x": 0,
-        "y": 25
+        "y": 24
       },
       "id": 3,
       "options": {
-        "legend": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
+          "fields": "",
+          "values": false
         },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
       "pluginVersion": "12.3.2",
       "targets": [
@@ -898,7 +690,7 @@
             "uid": "PAFEC6320FFCC69D1"
           },
           "editorMode": "builder",
-          "expr": "count by(generated_by) (sum by(data_policy, generated_by, centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"globalbroker.inmet.gov.br\"}[24h])))",
+          "expr": "count by(generated_by) (sum by(data_policy, generated_by, centre_id) (increase(wis2node_monitor_origin_volume_received_total{broker_host=\"$broker_host\"}[24h])))",
           "instant": false,
           "interval": "4h",
           "legendFormat": "__auto",
@@ -907,7 +699,7 @@
         }
       ],
       "title": "Number of active WIS2 Nodes by notification-generated-by",
-      "type": "timeseries"
+      "type": "stat"
     }
   ],
   "preload": false,
@@ -916,7 +708,30 @@
     "preconfigured"
   ],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "globalbroker.inmet.gov.br",
+          "value": "globalbroker.inmet.gov.br"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(broker_host)",
+        "name": "broker_host",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(broker_host)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
   },
   "time": {
     "from": "now-7d",
@@ -926,5 +741,5 @@
   "timezone": "browser",
   "title": "Number of Active WIS2 Nodes",
   "uid": "mlvj9j5",
-  "version": 20
+  "version": 21
 }
