@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -257,12 +257,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-48h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "WIS2 Satellite Monitoring",
   "uid": "mlw6vkd",
-  "version": 9
+  "version": 11
 }
