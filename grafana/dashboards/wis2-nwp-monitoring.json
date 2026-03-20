@@ -1,0 +1,567 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 6,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PAFEC6320FFCC69D1"
+      },
+      "description": "Hourly increase of volume published  on origin/a/wis2/+/weather/prediction/# breakdown by WIS2 centre-id as derived from the WIS2-topic, volume based on the length of the canonical-link as advertised in the WIS2 notification",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(centre_id) (increase(wis2node_monitor_forecast_origin_volume_received_total{broker_host=\"$broker_host\", subtopic1=~\"$subtopic1\", subtopic2=~\"$subtopic2\", subtopic3=~\"$subtopic3\", subtopic4=~\"$subtopic4\"}[1h]))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Data volume published per hour, by centre-id",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PAFEC6320FFCC69D1"
+      },
+      "description": "Hourly increase of volume published  on origin/a/wis2/+/weather/prediction/# breakdown by WIS2 centre-id as derived from the WIS2-topic, volume based on the length of the canonical-link as advertised in the WIS2 notification",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "centre_id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 180
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "metadata_id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 715
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "subtopic1"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 99
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Centre-id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 152
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "subtopic2"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 127
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "subtopic3"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 111
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "subtopic4"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 105
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Avg Volume per hour"
+          }
+        ]
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "avg_over_time(\r\n  sum by(centre_id, subtopic1, subtopic2, subtopic3, subtopic4) (\r\n    increase(wis2node_monitor_forecast_origin_volume_received_total{\r\n      broker_host=\"$broker_host\",\r\n      subtopic1=~\"$subtopic1\",\r\n      subtopic2=~\"$subtopic2\",\r\n      subtopic3=~\"$subtopic3\",\r\n      subtopic4=~\"$subtopic4\"\r\n    }[1h])\r\n  )[$__range:1h]\r\n)",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Average Data Volume published per hour by centre-id and metadata-id",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "Value": "Avg Volume/hr",
+              "centre_id": "Centre-id"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PAFEC6320FFCC69D1"
+      },
+      "description": "Hourly increase of number of notifications published  on origin/a/wis2/+/weather/prediction/# breakdown by WIS2 centre-id as derived from the WIS2-topic",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "builder",
+          "expr": "sum by(centre_id) (increase(wis2node_monitor_forecast_origin_messages_received_total{broker_host=\"$broker_host\", subtopic1=~\"$subtopic1\", subtopic2=~\"$subtopic2\", subtopic3=~\"$subtopic3\", subtopic4=~\"$subtopic4\"}[1h]))",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Notifications published per hour, by centre-id",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [
+    "preconfigured"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "globalbroker.inmet.gov.br",
+          "value": "globalbroker.inmet.gov.br"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_forecast_origin_messages_received_total,broker_host)",
+        "name": "broker_host",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_forecast_origin_messages_received_total,broker_host)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "analysis",
+            "forecast"
+          ],
+          "value": [
+            "analysis",
+            "forecast"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic1)",
+        "includeAll": false,
+        "multi": true,
+        "name": "subtopic1",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic1)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "medium-range",
+            "short-range"
+          ],
+          "value": [
+            "medium-range",
+            "short-range"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic2)",
+        "includeAll": false,
+        "multi": true,
+        "name": "subtopic2",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic2)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "deterministic",
+            "probabilistic"
+          ],
+          "value": [
+            "deterministic",
+            "probabilistic"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic3)",
+        "includeAll": false,
+        "multi": true,
+        "name": "subtopic3",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic3)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "global",
+            "limited-area",
+            "trajectory"
+          ],
+          "value": [
+            "global",
+            "limited-area",
+            "trajectory"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic4)",
+        "includeAll": false,
+        "multi": true,
+        "name": "subtopic4",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_forecast_origin_volume_received_total,subtopic4)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-2d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "WIS2 NWP Monitoring",
+  "uid": "mlwsr5m",
+  "version": 1
+}
