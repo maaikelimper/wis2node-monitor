@@ -71,10 +71,10 @@ origin_volume_received = Counter('wis2node_monitor_origin_volume_received',
 
 satellite_origin_messages_received = Counter('wis2node_monitor_satellite_origin_messages_received',
                                 'satellite messages received by centre_id',
-                                ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2"])
+                                ["broker_host","centre_id","metadata_id","data_policy", "is_dbnet", "subtopic1","subtopic2"])
 satellite_origin_volume_received = Counter('wis2node_monitor_satellite_origin_volume_received',
                                 'satellite data volume received by centre_id',
-                                ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2"])
+                                ["broker_host","centre_id","metadata_id","data_policy", "is_dbnet", "subtopic1","subtopic2"])
 
 forecast_origin_messages_received = Counter('wis2node_monitor_forecast_origin_messages_received',
                                 'forecast messages received by centre_id',
@@ -189,11 +189,13 @@ class MetricsCollector:
                 origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(1)
                 origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(canonical_link_length)
                 if level7 == 'space-based-observations' and level0 == 'origin':
+                    data_id = m.get('properties', {}).get('data_id', 'none')
+                    is_dbnet = 1 if 'dbnet' in data_id.lower() else 0
                     subtopic1 = topic.split('/')[8] if len(topic.split('/')) > 8 else 'none'
                     subtopic2 = topic.split('/')[9] if len(topic.split('/')) > 9 else 'none'
                     if canonical_link_length > 0:
-                        satellite_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2).inc(1)
-                        satellite_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2).inc(canonical_link_length)
+                        satellite_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, is_dbnet, subtopic1, subtopic2).inc(1)
+                        satellite_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, is_dbnet, subtopic1, subtopic2).inc(canonical_link_length)
                 if level7 == 'prediction' and level0 == 'origin':
                     subtopic1 = topic.split('/')[8] if len(topic.split('/')) > 8 else 'none'
                     subtopic2 = topic.split('/')[9] if len(topic.split('/')) > 9 else 'none'
