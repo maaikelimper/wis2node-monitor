@@ -1,24 +1,24 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 60s
 
 scrape_configs:
   - job_name: 'wis2node-monitor-usa'
-    scrape_interval: 15s
+    scrape_interval: 60s
     static_configs:
     - targets: ['wis2node-monitor-usa:8111']
 
   - job_name: 'wis2node-monitor-france'
-    scrape_interval: 15s
+    scrape_interval: 60s
     static_configs:
     - targets: ['wis2node-monitor-france:8111']
 
   - job_name: 'wis2node-monitor-brazil'
-    scrape_interval: 15s
+    scrape_interval: 60s
     static_configs:
     - targets: ['wis2node-monitor-brazil:8111']
 
   - job_name: 'wis2node-monitor-china'
-    scrape_interval: 15s
+    scrape_interval: 60s
     static_configs:
     - targets: ['wis2node-monitor-china:8111']
 

@@ -61,44 +61,33 @@ INTERRUPT = False
 
 BROKER_HOST = os.environ.get('BROKER_HOST', '')
 
-wis2node_active = Gauge('wis2node_monitor_active',
-                    'wis2node active by centre_id',
-                    ["centre_id"])
-data_origin_messages_received = Counter('wis2node_monitor_data_origin_messages_received',
-                                'data messages received by centre_id and generated_by',
-                                ["broker_host","centre_id", "generated_by"])
-synop_origin_messages_received = Counter('wis2node_monitor_synop_origin_messages_received',
-                                'synop messages received by centre_id and generated_by',
-                                ["broker_host","centre_id", "generated_by"])
+origin_messages_received = Counter('wis2node_monitor_origin_messages_received',
+                                'breakdown by number of messages',
+                                ["broker_host","centre_id","metadata_id","data_policy","discipline","subtopics","generated_by"])
+
+origin_volume_received = Counter('wis2node_monitor_origin_volume_received',
+                                'breakdown by volume received',
+                                ["broker_host","centre_id","metadata_id","data_policy","discipline","subtopics","generated_by"])
+
+satellite_origin_messages_received = Counter('wis2node_monitor_satellite_origin_messages_received',
+                                'satellite messages received by centre_id',
+                                ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2"])
+satellite_origin_volume_received = Counter('wis2node_monitor_satellite_origin_volume_received',
+                                'satellite data volume received by centre_id',
+                                ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2"])
+
+forecast_origin_messages_received = Counter('wis2node_monitor_forecast_origin_messages_received',
+                                'forecast messages received by centre_id',
+                                ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2","subtopic3","subtopic4"])
+forecast_origin_volume_received = Counter('wis2node_monitor_forecast_origin_volume_received',
+                                'forecast data volume received by centre_id',
+                                ["broker_host","centre_id","metadata_id","data_policy","subtopic1","subtopic2","subtopic3","subtopic4"])
+
 
 class MetricsCollector:
     def __init__(self):
         self.message_buffer = []
         self.buffer_lock = Lock()
-
-    def update_wis2node_active_gauge(self, centre_id_list):
-        """
-        function to update the wis2node_active-gauge
-
-        :param centre_id_list: list of centre_ids
-
-        :returns: `None`
-        """
-
-        wis2node_active._metrics.clear()
-        for centre_id in centre_id_list:
-            wis2node_active.labels(centre_id).set(0)
-
-    def init_wis2node_active_gauge(self):
-        """
-        function to initialize the wis2node_active-gauge
-
-        :returns: `None`
-        """
-
-        centre_id_list = []
-        # TODO: get centre_id_list from wis2-registry
-        self.update_wis2node_active_gauge(centre_id_list)
 
     def sub_connect(self, client, userdata, flags, rc, properties=None):
         """
@@ -115,8 +104,17 @@ class MetricsCollector:
 
         # topics to subscribe to
         topics = [
-            'origin/a/wis2/+/data/#',
-            'origin/a/wis2/+/metadata/#'
+            'origin/a/wis2/+/data/+/climate/#',
+            'origin/a/wis2/+/data/+/hydrology/#',
+            'origin/a/wis2/+/data/+/atmospheric-composition/#',
+            'origin/a/wis2/+/data/+/cryosphere/#',
+            'origin/a/wis2/+/data/+/ocean/#',
+            'origin/a/wis2/+/data/+/space-weather/#',
+            'origin/a/wis2/+/data/+/weather/advisories-warnings',
+            'origin/a/wis2/+/data/+/weather/aviation/#',
+            'origin/a/wis2/+/data/+/weather/prediction/#',
+            'origin/a/wis2/+/data/+/weather/space-based-observations/#',
+            'origin/a/wis2/+/data/+/weather/surface-based-observations/#'
         ]
 
         logger.info(f"on connection to subscribe: {mqtt.connack_string(rc)}")
@@ -135,12 +133,6 @@ class MetricsCollector:
 
         :returns: `None`
         """
-
-        # parse the centre_id from the topic
-        centre_id = msg.topic.split('/')[3]
-
-        # update the gauge
-        wis2node_active.labels(centre_id).set(1)
 
         # add received message to buffer (do not process here)
         with self.buffer_lock:
@@ -164,9 +156,12 @@ class MetricsCollector:
 
         for topic, msg in messages_to_process:
             centre_id = topic.split('/')[3]
+            data_policy = topic.split('/')[5]
             level4 = topic.split('/')[4]
             level0 = topic.split('/')[0]
-            last_level = topic.split('/')[-1]
+            discipline = topic.split('/')[6] if len(topic.split('/')) > 6 else 'none'
+            level7 = topic.split('/')[7] if len(topic.split('/')) > 7 else 'none'
+            subtopic3 = topic.split('/')[10] if len(topic.split('/')) > 10 else 'none'
             m = json.loads(msg.payload.decode('utf-8'))
             # parse generated_by from message-attribute
             if 'generated_by' in m:
@@ -175,12 +170,38 @@ class MetricsCollector:
                 generated_by = m['generated-by']
             else:
                 generated_by = 'none'
+            links = m.get('links', [])
+            # get length of the first link  with rel='canonical' or rel='update' if it exists, otherwise set to 0
+            canonical_link_length = 0
+            for link in links:
+                if link.get('rel') == 'canonical' and 'href' in link:
+                    canonical_link_length = link['length'] if 'length' in link else 0
+                    break
+                elif link.get('rel') == 'update' and 'href' in link:
+                    canonical_link_length = link['length'] if 'length' in link else 0
+                    break
+            
             # update the appropriate counter
             if level4 == 'data':
-                if last_level == 'synop' and level0 == 'origin':
-                    synop_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
-                if level0 == 'origin':
-                    data_origin_messages_received.labels(BROKER_HOST, centre_id, generated_by).inc(1)
+                metadata_id = m.get('properties', {}).get('metadata_id', 'none')
+                # all topics below discipline are considered subtopics
+                subtopics = topic.split(f'{discipline}/')[1] if discipline != 'none' else 'none'
+                origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(1)
+                origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(canonical_link_length)
+                if level7 == 'space-based-observations' and level0 == 'origin':
+                    subtopic1 = topic.split('/')[8] if len(topic.split('/')) > 8 else 'none'
+                    subtopic2 = topic.split('/')[9] if len(topic.split('/')) > 9 else 'none'
+                    if canonical_link_length > 0:
+                        satellite_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2).inc(1)
+                        satellite_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2).inc(canonical_link_length)
+                if level7 == 'prediction' and level0 == 'origin':
+                    subtopic1 = topic.split('/')[8] if len(topic.split('/')) > 8 else 'none'
+                    subtopic2 = topic.split('/')[9] if len(topic.split('/')) > 9 else 'none'
+                    subtopic3 = topic.split('/')[10] if len(topic.split('/')) > 10 else 'none'
+                    subtopic4 = topic.split('/')[11] if len(topic.split('/')) > 11 else 'none'
+                    if canonical_link_length > 0:
+                        forecast_origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2, subtopic3, subtopic4).inc(1)
+                        forecast_origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, subtopic1, subtopic2, subtopic3, subtopic4).inc(canonical_link_length)
 
         end_time = _time.time()
         duration = end_time - start_time
@@ -241,7 +262,6 @@ class MetricsCollector:
 def main():
     start_http_server(8111)
     collector = MetricsCollector()
-    collector.init_wis2node_active_gauge()
 
     Thread(target=collector.periodic_buffer_processing, daemon=True).start()
     collector.gather_mqtt_metrics()
