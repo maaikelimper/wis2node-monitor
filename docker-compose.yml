@@ -143,3 +143,4 @@ volumes:
   prometheus-data:
   traefik-letsencrypt:
   grafana-data:
+  loki-data:
