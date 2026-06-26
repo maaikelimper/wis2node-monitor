@@ -180,12 +180,12 @@ class MetricsCollector:
                 elif link.get('rel') == 'update' and 'href' in link:
                     canonical_link_length = link['length'] if 'length' in link else 0
                     break
-            
             # update the appropriate counter
             if level4 == 'data':
                 metadata_id = m.get('properties', {}).get('metadata_id', 'none')
                 # all topics below discipline are considered subtopics
                 subtopics = topic.split(f'{discipline}/')[1] if discipline != 'none' else 'none'
+                logger.info(f"WIS2-notification received from {centre_id}, size={canonical_link_length} bytes, discipline={discipline}, subtopics={subtopics} (generated_by={generated_by})")
                 origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(1)
                 origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(canonical_link_length)
                 if level7 == 'space-based-observations' and level0 == 'origin':
