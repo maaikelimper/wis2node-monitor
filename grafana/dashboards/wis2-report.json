@@ -1,0 +1,278 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PAFEC6320FFCC69D1"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data Volume"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 19,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 1,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Number of datasets"
+          }
+        ]
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "count by(discipline, data_policy) (max by(discipline, data_policy, metadata_id) (max by(broker_host, metadata_id, discipline, data_policy) (increase(wis2node_monitor_origin_volume_received_total{metadata_id!=\"none\", subtopics=~\"$subtopics\", data_policy=~\"$data_policy\", discipline=~\"$discipline\"}[$__range]))))",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "Number of datasets"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "sum by(data_policy, discipline) (max by(data_policy, centre_id, discipline) (sum by(broker_host, data_policy, centre_id, discipline) (increase(wis2node_monitor_origin_messages_received_total{subtopics=~\"$subtopics\", data_policy=~\"$data_policy\", discipline=~\"$discipline\"}[$__range]))))",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "Number of messages"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "sum by(discipline, data_policy) (max by(discipline, data_policy, centre_id) (sum by(broker_host, data_policy, discipline, centre_id) (increase(wis2node_monitor_origin_volume_received_total{subtopics=~\"$subtopics\", data_policy=~\"$data_policy\", discipline=~\"$discipline\"}[$__range]))))",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "Data Volume"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PAFEC6320FFCC69D1"
+          },
+          "editorMode": "builder",
+          "exemplar": false,
+          "expr": "count by(discipline, data_policy) (max by(discipline, data_policy, centre_id) (sum by(broker_host, data_policy, discipline, centre_id) (increase(wis2node_monitor_origin_volume_received_total{subtopics=~\"$subtopics\", data_policy=~\"$data_policy\", discipline=~\"$discipline\"}[$__range]))))",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "Number of unique centre-id"
+        }
+      ],
+      "title": "WIS2 Notification Messages statistics by discipline and data_policy",
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "Time": 0,
+              "Value": 3,
+              "data_policy": 2,
+              "discipline": 1
+            },
+            "renameByName": {
+              "Value #Data Volume": "Data Volume",
+              "Value #Number of datasets": "Number of datasets",
+              "Value #Number of messages": "Number of messages",
+              "Value #Number of unique centre-id": "Number of unique centre-id",
+              "data_policy": "data-policy",
+              "discipline": "Earth System Discipline"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_origin_messages_received_total,discipline)",
+        "includeAll": true,
+        "label": "Earth System Discipline",
+        "name": "discipline",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_origin_messages_received_total,discipline)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_origin_messages_received_total,data_policy)",
+        "includeAll": true,
+        "label": "Data Policy",
+        "name": "data_policy",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_origin_messages_received_total,data_policy)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PAFEC6320FFCC69D1"
+        },
+        "definition": "label_values(wis2node_monitor_origin_messages_received_total{discipline=~\"$discipline\"},subtopics)",
+        "includeAll": true,
+        "label": "subtopics",
+        "multi": true,
+        "name": "subtopics",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(wis2node_monitor_origin_messages_received_total{discipline=~\"$discipline\"},subtopics)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "WIS2 Report",
+  "uid": "mlr66ff",
+  "version": 19
+}
