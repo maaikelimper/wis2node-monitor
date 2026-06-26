@@ -175,10 +175,10 @@ class MetricsCollector:
             canonical_link_length = 0
             for link in links:
                 if link.get('rel') == 'canonical' and 'href' in link:
-                    canonical_link_length = link['length'] if 'length' in link else -1
+                    canonical_link_length = link['length'] if 'length' in link else 0
                     break
                 elif link.get('rel') == 'update' and 'href' in link:
-                    canonical_link_length = link['length'] if 'length' in link else -1
+                    canonical_link_length = link['length'] if 'length' in link else 0
                     break
             # update the appropriate counter
             if level4 == 'data':
@@ -187,9 +187,9 @@ class MetricsCollector:
                 subtopics = topic.split(f'{discipline}/')[1] if discipline != 'none' else 'none'
                 # define size_str as either "unknown" or size in bytes, kilobytes, megabytes, or gigabytes
                 size_str = "unknown"
-                if canonical_link_length >= 0:
+                if canonical_link_length > 0:
                     if canonical_link_length < 1024:
-                        size_str = f"{canonical_link_length} Bytes"
+                        size_str = f"{canonical_link_length} B"
                     elif canonical_link_length < 1024**2:
                         size_str = f"{canonical_link_length / 1024:.2f} KB"
                     elif canonical_link_length < 1024**3:
