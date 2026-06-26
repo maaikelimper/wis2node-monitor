@@ -226,14 +226,14 @@ class MetricsCollector:
 
     def periodic_buffer_processing(self):
         """
-        function to process buffered messages every 5 seconds
+        function to process buffered messages every 2 seconds
 
         :returns: `None`
         """
 
         while True:
             self.process_buffered_messages()
-            time.sleep(5)
+            time.sleep(2)
 
     def gather_mqtt_metrics(self):
         """
