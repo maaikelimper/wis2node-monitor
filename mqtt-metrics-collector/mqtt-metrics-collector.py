@@ -54,7 +54,7 @@ LOGGING_LEVEL = os.environ.get('LOG_LOGLEVEL', 'INFO')
 # gotta log to stdout so docker logs sees the python-logs
 logging.basicConfig(stream=sys.stdout)
 # create our own logger using same log-level as wis2box
-logger = logging.getLogger('mqtt_metrics_collector')
+logger = logging.getLogger('WIS2-MONITOR')
 logger.setLevel(LOGGING_LEVEL)
 
 INTERRUPT = False
@@ -117,9 +117,9 @@ class MetricsCollector:
             'origin/a/wis2/+/data/+/weather/surface-based-observations/#'
         ]
 
-        logger.info(f"on connection to subscribe: {mqtt.connack_string(rc)}")
+        logger.debug(f"on connection to subscribe: {mqtt.connack_string(rc)}")
         for s in topics:
-            logger.info(f"subscribing to topic: {s}")
+            logger.debug(f"subscribing to topic: {s}")
             client.subscribe(s, qos=0)
 
     def sub_mqtt_metrics(self, client, userdata, msg):
@@ -148,7 +148,7 @@ class MetricsCollector:
 
         import time as _time
         start_time = _time.time()
-        logger.info(f"Start processing {len(self.message_buffer)} messages")
+        logger.debug(f"Start processing {len(self.message_buffer)} messages")
 
         with self.buffer_lock:
             messages_to_process = self.message_buffer
@@ -175,17 +175,31 @@ class MetricsCollector:
             canonical_link_length = 0
             for link in links:
                 if link.get('rel') == 'canonical' and 'href' in link:
-                    canonical_link_length = link['length'] if 'length' in link else 0
+                    canonical_link_length = link['length'] if 'length' in link else -1
                     break
                 elif link.get('rel') == 'update' and 'href' in link:
-                    canonical_link_length = link['length'] if 'length' in link else 0
+                    canonical_link_length = link['length'] if 'length' in link else -1
                     break
             # update the appropriate counter
             if level4 == 'data':
                 metadata_id = m.get('properties', {}).get('metadata_id', 'none')
                 # all topics below discipline are considered subtopics
                 subtopics = topic.split(f'{discipline}/')[1] if discipline != 'none' else 'none'
-                logger.info(f"WIS2-notification received from {centre_id}, size={canonical_link_length} bytes, discipline={discipline}, subtopics={subtopics} (generated_by={generated_by})")
+                # define size_str as either "unknown" or size in bytes, kilobytes, megabytes, or gigabytes
+                size_str = "unknown"
+                if canonical_link_length >= 0:
+                    if canonical_link_length < 1024:
+                        size_str = f"{canonical_link_length} Bytes"
+                    elif canonical_link_length < 1024**2:
+                        size_str = f"{canonical_link_length / 1024:.2f} KB"
+                    elif canonical_link_length < 1024**3:
+                        size_str = f"{canonical_link_length / (1024**2):.2f} MB"
+                    else:
+                        size_str = f"{canonical_link_length / (1024**3):.2f} GB"
+                if generated_by != 'none':
+                    logger.info(f"Message received from {centre_id}, size={size_str}, discipline={discipline}, subtopics={subtopics} (generated_by={generated_by})")
+                else:
+                    logger.info(f"Message received from {centre_id}, size={size_str}, discipline={discipline}, subtopics={subtopics}")
                 origin_messages_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(1)
                 origin_volume_received.labels(BROKER_HOST, centre_id, metadata_id, data_policy, discipline, subtopics, generated_by).inc(canonical_link_length)
                 if level7 == 'space-based-observations' and level0 == 'origin':
@@ -207,7 +221,7 @@ class MetricsCollector:
 
         end_time = _time.time()
         duration = end_time - start_time
-        logger.info(f"Finished processing {len(messages_to_process)} messages in {duration:.4f} seconds")
+        logger.debug(f"Finished processing {len(messages_to_process)} messages in {duration:.4f} seconds")
 
 
     def periodic_buffer_processing(self):
