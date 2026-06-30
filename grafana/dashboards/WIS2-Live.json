@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 8,
   "links": [],
   "panels": [
     {
@@ -649,7 +649,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 14,
+        "h": 22,
         "w": 24,
         "x": 0,
         "y": 10
@@ -729,5 +729,5 @@
   "timezone": "browser",
   "title": "WMO Information System 2.0: Live demo",
   "uid": "mlwtq5h",
-  "version": 17
+  "version": 19
 }
