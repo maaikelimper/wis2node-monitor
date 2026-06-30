@@ -685,7 +685,7 @@
     }
   ],
   "preload": false,
-  "refresh": "5s",
+  "refresh": "3s",
   "schemaVersion": 42,
   "tags": [
     "preconfigured"
