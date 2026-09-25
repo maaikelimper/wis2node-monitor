@@ -100,6 +100,23 @@ services:
       - '--storage.tsdb.retention.time=365d'
       - '--log.level=warn'
   
+  json-output-creator:
+    <<: *logging
+    build:
+      context: ./json-output-creator
+    restart: unless-stopped
+    volumes:
+      - ./json-output-creator/queries.yml:/usr/src/app/queries.yml:ro
+      - json-output:/output
+    environment:
+      - PROMETHEUS_URL=http://prometheus:9090
+      - OUTPUT_DIR=/output
+      - INTERVAL_SECONDS=600
+      - RATE_INTERVAL=${JSON_OUTPUT_RATE_INTERVAL:-5m}
+      - LOGGING_LEVEL=${LOGGING_LEVEL:-INFO}
+    depends_on:
+      - prometheus
+
   grafana:
     image: grafana/grafana:12.3
     restart: unless-stopped
@@ -148,3 +165,4 @@ volumes:
   traefik-letsencrypt:
   grafana-data:
   loki-data:
+  json-output:

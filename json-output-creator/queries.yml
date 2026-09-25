@@ -1,0 +1,11 @@
+# Each entry produces one JSON file in the output directory.
+# `query` is a PromQL instant query. The placeholder $__rate_interval is
+# replaced with the value of `rate_interval` (default: RATE_INTERVAL env var).
+queries:
+  - name: satellite-origin-volume-received
+    output: satellite-origin-volume-received.json
+    rate_interval: 5m
+    query: >-
+      max by(subtopic1, subtopic2, centre_id, is_dbnet)
+      (sum by(centre_id, subtopic1, subtopic2, is_dbnet, broker_host)
+      (increase(wis2node_monitor_satellite_origin_volume_received_total[$__rate_interval])))
