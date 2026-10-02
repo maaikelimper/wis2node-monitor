@@ -40,7 +40,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div style="height:100%;width:100%;display:flex;align-items:center;justify-content:center;padding:4px;box-sizing:border-box;"><img src="https://wmo.int/themes/custom/server_theme/dist/images/logo_en.svg?tm6gku" style="max-height:100%;max-width:100%;object-fit:contain;" /></div>",
+        "content": "<div style=\"height:100%;width:100%;display:flex;align-items:center;justify-content:center;padding:4px;box-sizing:border-box;\">\n  <img src=\"https://wmo.int/themes/custom/server_theme/dist/images/logo.svg?tm6gku\" style=\"max-height:100%;max-width:100%;object-fit:contain;\" />\n</div>",
         "mode": "html"
       },
       "pluginVersion": "12.3.2",
