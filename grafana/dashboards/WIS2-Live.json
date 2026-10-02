@@ -130,7 +130,7 @@
           "refId": "A"
         }
       ],
-      "title": "Number of WIS2 Nodes sharing surface based observations",
+      "title": "Nr of WIS2 Nodes sharing surface based observations",
       "transformations": [
         {
           "id": "organize",
@@ -220,7 +220,7 @@
           "refId": "A"
         }
       ],
-      "title": "Number of WIS2 Nodes sharing space based observations",
+      "title": "Nr of WIS2 Nodes sharing space based observations",
       "transformations": [
         {
           "id": "organize",
@@ -310,7 +310,7 @@
           "refId": "A"
         }
       ],
-      "title": "Number of WIS2 Nodes sharing forecast products",
+      "title": "Nr of WIS2 Nodes sharing forecast products",
       "transformations": [
         {
           "id": "organize",
